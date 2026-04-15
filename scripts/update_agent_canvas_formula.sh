@@ -3,15 +3,15 @@ set -euo pipefail
 
 if [[ $# -lt 1 || $# -gt 2 ]]; then
   echo "usage: $0 <version> [archive_path]" >&2
-  echo "example: $0 0.13.0 /tmp/agent-canvas-0.13.0-homebrew.tar.gz" >&2
+  echo "example: $0 0.13.0 /tmp/agent-canvas-pro-0.13.0-homebrew.tar.gz" >&2
   exit 1
 fi
 
 VERSION="${1#v}"
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-FORMULA_PATH="${ROOT_DIR}/Formula/agent-canvas.rb"
+FORMULA_PATH="${ROOT_DIR}/Formula/agent-canvas-pro.rb"
 DIST_DIR="${ROOT_DIR}/dist"
-ARCHIVE_NAME="agent-canvas-${VERSION}-homebrew.tar.gz"
+ARCHIVE_NAME="agent-canvas-pro-${VERSION}-homebrew.tar.gz"
 ARCHIVE_PATH="${2:-${ROOT_DIR}/../agent-canvas-pro/release/${ARCHIVE_NAME}}"
 REPO="git54496/agent-canvas-pro"
 TAP_REPO="git54496/homebrew-agent-canvas-pro"
@@ -27,7 +27,7 @@ cp "${ARCHIVE_PATH}" "${DIST_DIR}/${ARCHIVE_NAME}"
 SHA256="$(shasum -a 256 "${DIST_DIR}/${ARCHIVE_NAME}" | awk '{print $1}')"
 
 cat > "${FORMULA_PATH}" <<EOF
-class AgentCanvas < Formula
+class AgentCanvasPro < Formula
   desc "Excalidraw canvas CLI for AI agents"
   homepage "https://github.com/${REPO}"
   url "${URL}"
@@ -41,16 +41,16 @@ class AgentCanvas < Formula
   def install
     libexec.install Dir["*"]
 
-    (bin/"agent-canvas").write_env_script(
-      libexec/"bin/agent-canvas.js",
+    (bin/"canvas").write_env_script(
+      libexec/"bin/canvas.js",
       PATH => "#{Formula["node"].opt_bin}:#{ENV["PATH"]}"
     )
   end
 
   def caveats
     <<~EOS
-      If \`agent-canvas\` does not resolve to this Homebrew install, run:
-        which -a agent-canvas
+      If \`canvas\` does not resolve to this Homebrew install, run:
+        which -a canvas
 
       If a Node global install appears first in PATH, remove it:
         npm uninstall -g @agent-canvas/cli
@@ -58,7 +58,7 @@ class AgentCanvas < Formula
   end
 
   test do
-    assert_equal version.to_s, shell_output("#{bin}/agent-canvas --version").strip
+    assert_equal version.to_s, shell_output("#{bin}/canvas --version").strip
   end
 end
 EOF
